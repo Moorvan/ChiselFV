@@ -9,7 +9,13 @@ https://github.com/Moorvan/RISCV-Formal-Chisel
 
 
 ## Deps
-You can use Dockerfile to build the verification environment.
+
+The main deps is:
+- SymbiYosys. You can get from:
+https://github.com/YosysHQ/oss-cad-suite-build
+- sbt
+
+Or you can use Dockerfile to build the verification environment.
 
 ```dockerfile
 docker build -t chiselfv:v0 .
