@@ -17,6 +17,6 @@ https://github.com/YosysHQ/oss-cad-suite-build
 
 Or you can use Dockerfile to build the verification environment.
 
-```dockerfile
+```shell
 docker build -t chiselfv:v0 .
 ```
