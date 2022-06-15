@@ -340,3 +340,6 @@ project/plugins/project/
 hs_err_pid*
 
 /project/
+*_prove
+*_build
+*_abcPdr
