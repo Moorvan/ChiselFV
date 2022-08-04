@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util.HasBlackBoxInline
 
 
-class InitialReg(w: Int, value: Int) extends BlackBox with HasBlackBoxInline {
+class InitialReg(w: Int, value: Int) extends BlackBox(Map("WIDTH" -> w, "Value" -> value)) with HasBlackBoxInline {
   val io = IO(new Bundle {
     val clk = Input(Clock())
     val reset = Input(Bool())
@@ -14,19 +14,19 @@ class InitialReg(w: Int, value: Int) extends BlackBox with HasBlackBoxInline {
 
   setInline("InitialReg.sv",
     s"""
-       |module InitialReg(
+       |module InitialReg #(parameter WIDTH, parameter Value) (
        |    input  clk,
        |    input reset,
-       |    input [${w-1}:0] in,
-       |    output [${w-1}:0] out
+       |    input [WIDTH-1:0] in,
+       |    output [WIDTH-1:0] out
        |);
        |
-       |reg [${w-1}:0] reg_;
+       |reg [WIDTH-1:0] reg_;
        |assign out = reg_;
-       |initial reg_ = $value;
+       |initial reg_ = Value;
        |
        |always @(posedge clk) begin
-       |  if (reset) reg_ <= $value;
+       |  if (reset) reg_ <= Value;
        |  else reg_ <= in;
        |end
        |endmodule
