@@ -38,6 +38,16 @@ class Buffer(width: Int, psize: Int) extends Module with Formal {
 
   when(io.in_wr) {
     when(wrptr < (depth - 1).U) {
+      wrptr := wrptr + 1.U
+    }.otherwise {
+      wrptr := 0.U
+    }
+  }.otherwise {
+    wrptr := wrptr
+  }
+
+  when(io.in_rd) {
+    when(rdptr < (depth - 1).U) {
       rdptr := rdptr + 1.U
     }.otherwise {
       rdptr := 0.U
@@ -46,30 +56,32 @@ class Buffer(width: Int, psize: Int) extends Module with Formal {
     rdptr := rdptr
   }
 
-  when (io.in_wr) {
+  when(io.in_wr) {
     buffer.write(wrptr, io.in_wdata);
   }
 
-  when (io.in_rd) {
+  when(io.in_rd) {
     out_rdata := buffer.read(rdptr)
-  } .otherwise {
+  }.otherwise {
     out_rdata := out_rdata
   }
 
   // Formal Assertions
-  when (out_full) {
+
+  // Assert Pass
+  when(out_full) {
     assume(!io.in_wr)
   }
-  when (io.out_empty) {
+  when(io.out_empty) {
     assume(!io.in_rd)
   }
 
   val in_rd_ff1 = RegInit(false.B)
-  val flag = RegInit(false.B)
-  val rnd_mark = Wire(Bool())
+  val flag      = RegInit(false.B)
+  val rnd_mark  = Wire(Bool())
   rnd_mark := DontCare
 
-  val mark_vld = io.in_wr & rnd_mark
+  val mark_vld  = io.in_wr & rnd_mark
   val check_vld = in_rd_ff1 & (out_rdata + 1.U === 0.U)
 
   in_rd_ff1 := io.in_rd
@@ -77,7 +89,7 @@ class Buffer(width: Int, psize: Int) extends Module with Formal {
 
   when(check_vld) {
     flag := false.B
-  } .elsewhen(mark_vld) {
+  }.elsewhen(mark_vld) {
     flag := true.B
   }
 
@@ -97,21 +109,23 @@ class Buffer(width: Int, psize: Int) extends Module with Formal {
 
 
   // Assert Fail
-//  val flag_fail = RegInit(false.B)
+//  val flag_fail      = RegInit(false.B)
 //  val check_vld_fail = in_rd_ff1 & (out_rdata + 2.U === 0.U)
 //
-//  when (check_vld_fail) {
+//  when(check_vld_fail) {
 //    flag_fail := false.B
-//  } .elsewhen(mark_vld) {
+//  }.elsewhen(mark_vld) {
 //    flag_fail := true.B
+//  }
+//
+//  when(flag_fail) {
+//    assert(!mark_vld)
 //  }
 
 }
 
 
-
-
 object Buffer extends App {
-//  Check.generateRTL(() => new Buffer(512, 2))
-  Check.bmc(() => new Buffer(512, 2))
+  //  Check.generateRTL(() => new Buffer(512, 2))
+  Check.bmc(() => new Buffer(4, 2))
 }
