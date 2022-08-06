@@ -113,5 +113,5 @@ class Buffer(width: Int, psize: Int) extends Module with Formal {
 
 object Buffer extends App {
 //  Check.generateRTL(() => new Buffer(512, 2))
-  Check.kInduction(() => new Buffer(512, 2))
+  Check.bmc(() => new Buffer(512, 2))
 }
