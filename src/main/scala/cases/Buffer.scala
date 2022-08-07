@@ -12,6 +12,8 @@ class Buffer(width: Int, psize: Int) extends Module with Formal {
     val out_rdata = Output(UInt(width.W))
     val out_empty = Output(Bool())
     val out_full  = Output(Bool())
+
+    val rnd_mark = Input(Bool())
   })
 
   val out_rdata = RegInit(0.U(width.W))
@@ -79,7 +81,7 @@ class Buffer(width: Int, psize: Int) extends Module with Formal {
   val in_rd_ff1 = RegInit(false.B)
   val flag      = RegInit(false.B)
   val rnd_mark  = Wire(Bool())
-  rnd_mark := DontCare
+  rnd_mark := io.rnd_mark
 
   val mark_vld  = io.in_wr & rnd_mark
   val check_vld = in_rd_ff1 & (out_rdata + 1.U === 0.U)
@@ -109,15 +111,16 @@ class Buffer(width: Int, psize: Int) extends Module with Formal {
 
 
   // Assert Fail
-//  val flag_fail      = RegInit(false.B)
-//  val check_vld_fail = in_rd_ff1 & (out_rdata + 2.U === 0.U)
-//
-//  when(check_vld_fail) {
-//    flag_fail := false.B
-//  }.elsewhen(mark_vld) {
-//    flag_fail := true.B
-//  }
-//
+  val flag_fail      = RegInit(false.B)
+  val check_vld_fail = in_rd_ff1 & (out_rdata + 2.U === 0.U)
+
+  when(check_vld_fail) {
+    flag_fail := false.B
+  }.elsewhen(mark_vld) {
+    flag_fail := true.B
+  }
+
+
 //  when(flag_fail) {
 //    assert(!mark_vld)
 //  }
