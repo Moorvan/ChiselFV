@@ -2,9 +2,6 @@ package chiselFv
 
 import chisel3.internal.sourceinfo.SourceInfo
 import chisel3.{assert => cassert, _}
-import chisel3.util._
-import chisel3._
-import firrtl.PrimOps.Pad
 
 
 trait Formal {
