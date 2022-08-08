@@ -52,6 +52,22 @@ trait Formal {
     }
   }
 
+  def assertAlwaysAfterNStepWhen(cond: Bool, n: Int, asert: Bool, msg: String = "")
+                                (implicit sourceInfo: SourceInfo,
+                                 compileOptions: CompileOptions): Unit = {
+    val next = RegInit(VecInit(Seq.fill(n)(false.B)))
+    when(cond) {
+      next(0) := true.B
+    }
+    for (i <- 1 until n) {
+      next(i) := next(i - 1)
+    }
+    when(next(n - 1)) {
+      assert(asert, msg)
+    }
+
+  }
+
   def past[T <: Data](value: T, n: Int)(block: T => Any)
                      (implicit sourceInfo: SourceInfo,
                       compileOptions: CompileOptions): Unit = {

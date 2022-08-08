@@ -24,6 +24,7 @@ class Counter(max_val: Int) extends Module with Formal {
   assertNextStepWhen(count =/= max_val.U, count =/= 0.U)
   assertAfterNStepWhen(count === max_val.U, 1, count === 0.U)
   assertAfterNStepWhen(count === max_val.U, 3, count === 2.U)
+  assertAlwaysAfterNStepWhen(count === max_val.U, 1, count >= 0.U)
 }
 
 object Counter extends App {
