@@ -64,6 +64,8 @@ class Memory2(WIDTH: Int, PSIZE: Int) extends Module with Formal {
     assert(out_data === random_data)
   }
 
+  
+
   // fail assertion
 //  val flag1 = RegInit(false.B)
 //  when(io.in_rd && (io.in_rd_addr === random_addr)) {
