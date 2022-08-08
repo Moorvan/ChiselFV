@@ -24,16 +24,19 @@ trait Formal {
     }
   }
 
-  def assertAfterWhen(cond: Bool, n: Int, asert: Bool, msg: String = "")
+  def assertAfterNStepWhen(cond: Bool, n: Int, asert: Bool, msg: String = "")
                      (implicit sourceInfo: SourceInfo,
                       compileOptions: CompileOptions): Unit = {
-    val flag = RegInit(false.B)
+    val next = RegInit(VecInit(Seq.fill(n)(false.B)))
     when(cond) {
-      flag := true.B
+      next(0) := true.B
     }.otherwise {
-      flag := false.B
+      next(0) := false.B
     }
-    when(ShiftRegister(flag, n - 1)) {
+    for (i <- 1 until n) {
+      next(i) := next(i - 1)
+    }
+    when(next(n - 1)) {
       assert(asert, msg)
     }
   }
