@@ -63,7 +63,7 @@ class Memory2(WIDTH: Int, PSIZE: Int) extends Module with Formal {
 //  when(flag) {
 //    assert(out_data === random_data)
 //  }
-  assertNextStepWhen(io.in_rd && (io.in_rd_addr === random_addr), out_data === random_data)
+  assertNextStepWhen(io.in_rd && (io.in_rd_addr === random_addr), out_data === random_data) // A |=> B
 
   
 

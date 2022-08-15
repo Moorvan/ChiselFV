@@ -20,11 +20,11 @@ class Counter(max_val: Int) extends Module with Formal {
     }
   }
 
-  assertNextStepWhen(count === max_val.U, count === 0.U)
+  assertNextStepWhen(count === max_val.U, count === 0.U) // |=>
   assertNextStepWhen(count =/= max_val.U, count =/= 0.U)
-  assertAfterNStepWhen(count === max_val.U, 1, count === 0.U)
+  assertAfterNStepWhen(count === max_val.U, 1, count === 0.U) // A -> ##n B
   assertAfterNStepWhen(count === max_val.U, 3, count === 2.U)
-  assertAlwaysAfterNStepWhen(count === max_val.U, 1, count >= 0.U)
+  assertAlwaysAfterNStepWhen(count === max_val.U, 1, count >= 0.U) // A -> ##[n:] B
 }
 
 object Counter extends App {
