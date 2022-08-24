@@ -34,7 +34,7 @@ trait Formal {
       next(i) := next(i - 1)
     }
     when(next(n - 1)) {
-      cassert(cond, msg)
+      assert(asert, msg)
     }
   }
 
@@ -55,7 +55,7 @@ trait Formal {
       next(i) := next(i - 1)
     }
     when(next(n - 1)) {
-      cassert(asert, msg)
+      assert(asert, msg)
     }
 
   }
