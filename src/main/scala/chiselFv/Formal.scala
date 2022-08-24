@@ -25,7 +25,7 @@ trait Formal {
                      (implicit sourceInfo: SourceInfo,
                       compileOptions: CompileOptions): Unit = {
     val next = RegInit(VecInit(Seq.fill(n)(false.B)))
-    when(cond) {
+    when(cond && notChaos) {
       next(0) := true.B
     }.otherwise {
       next(0) := false.B
@@ -34,36 +34,28 @@ trait Formal {
       next(i) := next(i - 1)
     }
     when(next(n - 1)) {
-      assert(asert, msg)
+      cassert(cond, msg)
     }
   }
 
   def assertNextStepWhen(cond: Bool, asert: Bool, msg: String = "")
                         (implicit sourceInfo: SourceInfo,
                          compileOptions: CompileOptions): Unit = {
-    val flag = RegInit(false.B)
-    when(cond) {
-      flag := true.B
-    }.otherwise {
-      flag := false.B
-    }
-    when(flag) {
-      assert(asert, msg)
-    }
+    assertAfterNStepWhen(cond, 1, asert, msg)
   }
 
   def assertAlwaysAfterNStepWhen(cond: Bool, n: Int, asert: Bool, msg: String = "")
                                 (implicit sourceInfo: SourceInfo,
                                  compileOptions: CompileOptions): Unit = {
     val next = RegInit(VecInit(Seq.fill(n)(false.B)))
-    when(cond) {
+    when(cond && notChaos) {
       next(0) := true.B
     }
     for (i <- 1 until n) {
       next(i) := next(i - 1)
     }
     when(next(n - 1)) {
-      assert(asert, msg)
+      cassert(asert, msg)
     }
 
   }
