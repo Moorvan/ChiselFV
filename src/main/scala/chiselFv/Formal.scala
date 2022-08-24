@@ -63,10 +63,16 @@ trait Formal {
   def past[T <: Data](value: T, n: Int)(block: T => Any)
                      (implicit sourceInfo: SourceInfo,
                       compileOptions: CompileOptions): Unit = {
-    when(notChaos & timeSinceReset >= n.U) {
+    when(notChaos && timeSinceReset >= n.U) {
       block(Delay(value, n))
     }
   }
+
+//  def freeze[T <: Data](value: T, n: Int)(block: T => Any)
+//                       (implicit sourceInfo: SourceInfo,
+//                        compileOptions: CompileOptions): Unit = {
+//    past(value, n)(block)
+//  }
 
   def initialReg(w: Int, v: Int): InitialReg = {
     val reg = Module(new InitialReg(w, v))

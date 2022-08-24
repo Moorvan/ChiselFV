@@ -14,11 +14,15 @@ class Counter(max_val: Int) extends Module with Formal {
   }
   io.count := count
   assert(count < 20.U)
-  past(count, 1) { lastCount =>
-    when(lastCount =/= max_val.U) {
-      assert(lastCount + 1.U === count)
-    }
-  }
+//  past(count, 1) { lastCount =>
+//    when(lastCount =/= max_val.U) {
+//      assert(lastCount + 1.U === count)
+//    }
+//  }
+
+//  freeze(count, 1) { cnt =>
+//    assertNextStepWhen(cnt =/= max_val.U, cnt + 1.U === count)
+//  }
 
   assertNextStepWhen(count === max_val.U, count === 0.U) // |=>
   assertNextStepWhen(count =/= max_val.U, count =/= 0.U)
