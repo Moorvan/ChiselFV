@@ -67,7 +67,7 @@ trait Formal {
       block(Delay(value, n))
     }
   }
-
+//
 //  def freeze[T <: Data](value: T, n: Int)(block: T => Any)
 //                       (implicit sourceInfo: SourceInfo,
 //                        compileOptions: CompileOptions): Unit = {
@@ -85,5 +85,4 @@ trait Formal {
     val cst = Module(new AnyConst(w))
     cst.io.out
   }
-
 }
