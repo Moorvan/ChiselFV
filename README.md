@@ -161,7 +161,6 @@ object Main extends App {
 
 The log of the verification process is shown below. It can be seen that the transition system of the multi-ported Memory is proved in the third step of the induction proof, and in the BMC verification, it is safe for 20 steps. The explanation is that in the first 20 steps, the property is always safe, and if the transition system is safe in three consecutive steps, then the fourth step is safe so that the property is always satisfied.
 
-<<<<<<< HEAD
 <img src="https://github.com/Moorvan/PictureHost/blob/main/chiselfv/logs.png?raw=true" height="600" />
 
 ### Pipeline Verification
@@ -170,19 +169,6 @@ We also tried to apply the ChiselFV framework to the formal verification of the 
 
 Our verification solution is mainly inspired by the [RISC-V Formal Verification Framework](https://github.com/SymbioticEDA/riscv-formal). They provide a framework for verifying RISC-V processors at the SystemVerilog level, using SVA to define properties and then using verification tools to verify them.
 
-We try to migrate the RISC-V Formal verification framework to the Chisel level by ChiselFV to verify the RISC-V processor at the Chisel level. The following figure is our verification framework. Details are explained in [RISC-V Formal Verification Framework](https://github.com/SymbioticEDA/riscv-formal).
-
-<img src="https://github.com/Moorvan/PictureHost/blob/main/chiselfv/riscvFvChisel.png?raw=true" height="270" />
-=======
-<img src="https://github.com/Moorvan/PictureHost/blob/main/chiselfv/logs.png?raw=true" height="540" />
->>>>>>> 8e6e0001d52c04427777e91b4081d2677bd3307d
-
-### Pipeline Verification
-
-We also tried to apply the ChiselFV framework to the formal verification of the processor. We implemented and verified a five-stage pipelined processor in the textbook using Chisel. The implementation and verification code and the introduction of the repository [RISC-V Formal in Chisel](https://github.com/Moorvan/RISCV-Formal-Chisel).
-
-Our verification solution is mainly inspired by the [RISC-V Formal Verification Framework](https://github.com/SymbioticEDA/riscv-formal). They provide a framework for verifying RISC-V processors at the SystemVerilog level, using SVA to define properties and then using verification tools to verify them.
-
-We try to migrate the RISC-V Formal verification framework to the Chisel level by ChiselFV to verify the RISC-V processor at the Chisel level. The following figure is our verification framework. Details are explained in [RISC-V Formal Verification Framework](https://github.com/SymbioticEDA/riscv-formal).
+We try to migrate the RISC-V Formal verification framework to the Chisel level by ChiselFV to verify the RISC-V processor at the Chisel level. The following figure is our verification framework. Details are explained in [RISC-V Formal in Chisel](https://github.com/Moorvan/RISCV-Formal-Chisel).
 
 <img src="https://github.com/Moorvan/PictureHost/blob/main/chiselfv/riscvFvChisel.png?raw=true" height="270" />
