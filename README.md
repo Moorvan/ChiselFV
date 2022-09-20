@@ -161,7 +161,7 @@ object Main extends App {
 
 The log of the verification process is shown below. It can be seen that the transition system of the multi-ported Memory is proved in the third step of the induction proof, and in the BMC verification, it is safe for 20 steps. The explanation is that in the first 20 steps, the property is always safe, and if the transition system is safe in three consecutive steps, then the fourth step is safe so that the property is always satisfied.
 
-<img src="https://github.com/Moorvan/PictureHost/blob/main/chiselfv/logs.png?raw=true" height="600" />
+<img src="https://github.com/Moorvan/PictureHost/blob/main/chiselfv/logs.png?raw=true" height="570" />
 
 ### Pipeline Verification
 
