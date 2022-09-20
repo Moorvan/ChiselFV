@@ -165,7 +165,7 @@ The log of the verification process is shown below. It can be seen that the tran
 
 ### Pipeline Verification
 
-We also tried to apply the ChiselFV framework to the formal verification of the processor. We implemented and verified a five-stage pipelined processor in the textbook using Chisel. The implementation and verification code and the introduction of the repository [RISC-V Formal in Chisel](https://github.com/Moorvan/RISCV-Formal-Chisel).
+We also tried to apply the ChiselFV framework to the formal verification of the processor. We implemented and verified a five-stage pipelined processor in the textbook using Chisel. The implementation and verification code and the introduction are in the repository [RISC-V Formal in Chisel](https://github.com/Moorvan/RISCV-Formal-Chisel).
 
 Our verification solution is mainly inspired by the [RISC-V Formal Verification Framework](https://github.com/SymbioticEDA/riscv-formal). They provide a framework for verifying RISC-V processors at the SystemVerilog level, using SVA to define properties and then using verification tools to verify them.
 
