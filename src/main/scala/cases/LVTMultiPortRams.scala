@@ -114,5 +114,6 @@ class LVTMultiPortRams(m: Int, n: Int, size: Int, w: Int) extends Module with Fo
 }
 
 object LVTMultiPortRams extends App {
-  Check.kInduction(() => new LVTMultiPortRams(2, 2, 8, 8))
+  Check.kInduction(() => new LVTMultiPortRams(m = 2, n = 2, size = 8, w = 8))
+  Check.kInduction(() => new LVTMultiPortRams(m = 3, n = 3, size = 8, w = 8))
 }

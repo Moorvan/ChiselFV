@@ -46,7 +46,7 @@ class Memory(c: Int, w: Int) extends Module {
 }
 ```
 
-Next, we need to verify the correctness of the memory module. To verify the correctness of the memory module, first, we need to describe its properties of memory module. We can describe the property as at any time, any address $addr$ can be written with $data_1$, and then after any time $t$, if there is no write operation to the same address during this period, $data_2$ read from the address $addr$ should be the same as $data_1$. Then, in the multi-ported Memory, we need to verify the hardware property as: at any time, any write port $i$ can write $data_1$ to any address $addr$, and then after any time $t$, if there is no write operation to the same address during this period, $data_2$ read from the address should be the same as $data_1$.
+Next, we need to verify the correctness of the memory module. To verify the correctness of the memory module, first, we need to describe its properties of memory module. We can describe the property as at any time, any address $addr$ can be written with $data_1$, and then after any time $t$, if there is no write operation to the same address during this period, $data_2$ read from the address $addr$ should be the same as $data_1$.
 
 Next, we need to describe the property in Chisel. We first consider a simple version, which is the property description of the Memory module. Note that there are several arbitrary variables: $addr$, $data_1$, and $t$. When we formalize the property, we can remove the two arbitrary variables and only keep $addr$ to simplify the verification complexity. We can use the fact that the input determines the write data, so the write data itself has the "any" meaning, and the time $t$ can be removed in the same way. Then, the updated property can be written as: at any time, for any variable $addr$, when the write address is $addr$, record the write data $data_1$, and then assume that there is no write operation to the same address during this period until the read address is $addr$, read the data $data_2$ and assert $data_1 = data_2$. 
 
@@ -113,3 +113,52 @@ class MultiPortedMemory(m: Int, n: Int, size: Int, w: Int) extends Module {
 }
 ```
 
+In the multi-ported Memory, we need to verify the hardware property as: at any time, any write port $i$ can write $data_1$ to any address $addr$, and then after any time $t$, if there is no write operation to the same address during this period, $data_2$ read from the address should be the same as $data_1$. We can refer to the picture below to understand the multi-ported Memory's property need to be verified.
+
+<img src="https://github.com/Moorvan/PictureHost/blob/main/chiselfv/memverify.png?raw=true" height="270" />
+
+We have finished the memory module verification code, and now we will consider the verification code for multi-port Memory. It is similar to the memory verification code that we can use the fact that the input determines some variables to remove them, such as $data_1$, $t$. In the multi-ported Memory, the port number $i$ of the write port and the port number $j$ of the read port are arbitrary, but they can also be interpreted as an input and have some "any" meaning. We can update the multi-ported memory module verification description to: For any time, for any address $addr$, when each write port writes to $addr$, record the data $data_1$; when any read port reads from $addr$, read the data $data_2$ and assert that $data_1 = data_2$.
+
+```scala
+class MultiPortedMemory(m: Int, n: Int, size: Int, w: Int) extend Module with Formal {
+  ...
+  // the IO and the implementation are omitted.
+  
+  // Formal verification
+  val addr = anyconst(addrW)
+  val flag = initialReg(1, 0)
+  val data = Reg(UInt(w.W))
+  val wire = WireInit(0.U(1.W))
+  flag.io.in := wire
+  for (i <- 0 until m) {
+    when(io.wrAddr(i) === addr && io.wrEna(i) === true.B) {
+      data := io.wrData(i)
+      wire := 1.U
+      for(j <- 0 until m) {
+        if (i != j) {
+          assume(io.wrAddr(j) =/= addr || io.wrEna(j) === false.B)
+        }
+      }
+    }
+  }
+  for (i <- 0 until n) {
+    when(io.rdAddr(i) === addr && flag.io.out === 1.U) {
+      assert(io.rdData(i) === data)
+    }
+  }
+}
+```
+
+After the description of the properties in Chisel, we can directly call the verification function provided by ChiselFV to perform formal verification.
+
+```scala
+object Main extends App {
+  Check.kInduction(() => new MultiPortedMemory(m = 2, n = 2, size = 8, w = 8))
+  Check.kInduction(() => new MultiPortedMemory(m = 3, n = 3, size = 8, w = 8))
+  Check.kInduction(() => new MultiPortedMemory(m = 4, n = 4, size = 16, w = 8))
+}
+```
+
+The log of the verification process is shown below. It can be seen that the transition system of the multi-ported Memory is proved in the third step of the induction proof, and in the BMC verification, it is safe for 20 steps. The explanation is that in the first 20 steps, the property is always safe, and if the transition system is safe in three consecutive steps, then the fourth step is safe so that the property is always satisfied.
+
+<img src="https://github.com/Moorvan/PictureHost/blob/main/chiselfv/logs.png?raw=true" height="600" />
