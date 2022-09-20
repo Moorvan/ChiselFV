@@ -92,7 +92,7 @@ Design and implementation details can be found at: https://github.com/Verificati
 
 Here, our focus is not on the design itself, so we abstract the multi-ported Memory. We are concerned about whether the multi-ported Memory can meet our requirements, so its internal implementation can be shielded, and we are only concerned about its input and output. The basic IO of a multi-ported memory with m write ports, and n read ports is shown below:
 
-<img src="https://raw.githubusercontent.com/Moorvan/PictureHost/main/chiselfv/mpmemoryio.png" height="50" />
+<img src="https://raw.githubusercontent.com/Moorvan/PictureHost/main/chiselfv/mpmemoryio.png" height="300" />
 
 And the definition in Chisel is:
 
