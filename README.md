@@ -20,6 +20,19 @@ Or you can use Dockerfile to build the verification environment.
 docker build -t chiselfv:v0 .
 ```
 
+## Usage
+
+Using the property description capability provided by ChiselFV, first import the ChiselFv package into your project, and then use the trait Formal in the Chisel module you need to use:
+
+```scala
+class Counter(max_val: Int) extends Module with Formal {
+  // ...
+}
+```
+
+Then you can use the assertions and timing-related property descriptions provided by ChiselFV in your module.
+
+
 ## Cases
 
 ### Memory

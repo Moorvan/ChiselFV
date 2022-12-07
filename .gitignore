@@ -344,3 +344,4 @@ hs_err_pid*
 *_build
 *_abcPdr
 *_bmc/
+*_gen/

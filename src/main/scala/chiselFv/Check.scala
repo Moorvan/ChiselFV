@@ -2,6 +2,7 @@ package chiselFv
 
 import chisel3.RawModule
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage, DesignAnnotation}
+import firrtl.annotations.Target
 
 import java.io.{File, PrintWriter}
 import java.nio.file.Paths
@@ -13,7 +14,7 @@ object Check {
     println("hello")
   }
 
-  def sby(mode: String = "prove", engines: String = "smtbmc boolector", depthStr: String, files: Array[String], module: String) = {
+  private def sby(mode: String = "prove", engines: String = "smtbmc boolector", depthStr: String, files: Array[String], module: String) = {
     s"""[options]
        |mode $mode
        |$depthStr
@@ -27,6 +28,17 @@ object Check {
        |
        |[files]
        |${files.reduce((a, b) => a + "\n" + b)}
+       |""".stripMargin
+  }
+
+  private def btorGenYs(files: String, top: String, targetFilename: String = "") = {
+    s"""read -sv $files
+       |prep -top $top -nordff
+       |flatten
+       |memory -nomap
+       |hierarchy -check
+       |setundef -undriven -init -expose
+       |write_btor -s ${if (targetFilename == "") top else targetFilename}.btor2
        |""".stripMargin
   }
 
@@ -74,33 +86,8 @@ object Check {
     }
 
     val sbyProcess = new ProcessBuilder("sby", sbyFileName).directory(dir).start()
-    val output = io.Source.fromInputStream(sbyProcess.getInputStream).getLines.mkString("\n")
-    val error = io.Source.fromInputStream(sbyProcess.getErrorStream).getLines.mkString("\n")
 
-    new PrintWriter(dirName + "/" + "sby.log") {
-      write(output)
-      close()
-    }
-
-    new PrintWriter(dirName + "/" + "sby.err") {
-      write(error)
-      close()
-    }
-
-    var flag = true
-    for (line <- output.linesIterator) {
-      breakable {
-        if (!checkLine(line)) {
-          flag = false
-          break()
-        }
-      }
-    }
-    if (flag) {
-      println(mode + " successful")
-    } else {
-      println(mode + " failed")
-    }
+    processResultHandler(sbyProcess, mod + "_" + mode, dirName)
   }
 
   private def checkLine(line: String) = {
@@ -147,6 +134,59 @@ object Check {
       close()
     }
 //    rtl
+  }
+
+  private def processResultHandler(process: Process, name: String, dir: String): Unit = {
+    val output = io.Source.fromInputStream(process.getInputStream).getLines.mkString("\n")
+    val error = io.Source.fromInputStream(process.getErrorStream).getLines.mkString("\n")
+
+    if (error != "") {
+      println("Error: " + error)
+    }
+
+    new PrintWriter(dir + "/" + name + ".log") {
+      write(output)
+      close()
+    }
+
+    new PrintWriter(dir + "/" + name + ".err") {
+      write(error)
+      close()
+    }
+
+    var flag = true
+    for (line <- output.linesIterator) {
+      breakable {
+        if (!checkLine(line)) {
+          flag = false
+          break()
+        }
+      }
+    }
+    if (flag) {
+      println(name + " successful")
+    } else {
+      println(name + " failed")
+    }
+  }
+
+  def generateBtor[T <: RawModule] (dutGen: () => T, targetDirSufix: String = "_btor_gen", outputFile: String = "")  = {
+    val name = modName(dutGen)
+    val targetDir = name + targetDirSufix
+    generateRTL(dutGen, targetDirSufix, outputFile)
+    val currentPath = Paths.get(System.getProperty("user.dir"))
+    val filePath = Paths.get(currentPath.toString, targetDir, name + ".ys")
+    val files = new File(targetDir).listFiles.filter(_.getName.endsWith(".sv")).map(_.getName).mkString(" ")
+
+    new PrintWriter(filePath.toString) {
+      print(btorGenYs(files, name, name));
+      close()
+    }
+    var dir = new File(targetDir)
+    val yosysProcess = new ProcessBuilder("yosys", filePath.toString).directory(dir).start()
+
+    processResultHandler(yosysProcess, "yosys_parse", targetDir)
+
   }
 
   def modName[T <: RawModule] (dutGen: () => T): String = {

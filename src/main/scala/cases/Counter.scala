@@ -38,5 +38,5 @@ class Counter(max_val: Int) extends Module with Formal {
 }
 
 object Counter extends App {
-  Check.kInduction(() => new Counter(10))
+  Check.bmc(() => new Counter(10))
 }

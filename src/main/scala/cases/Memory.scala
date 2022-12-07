@@ -40,6 +40,7 @@ class Memory(c: Int, w: Int) extends Module with Formal {
 }
 
 object Memory extends App {
-  Check.kInduction(() => new Memory(1024, 8))
+//  Check.kInduction(() => new Memory(1024, 8))
+  Check.generateBtor(() => new Memory(1024, 8))
 //  Check.kInduction(() => new Memory(2048, 8))
 }
