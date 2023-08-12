@@ -21,6 +21,14 @@ trait Formal {
     }
   }
 
+  def assertAt(n: UInt, cond: Bool, msg: String = "")
+              (implicit sourceInfo: SourceInfo,
+               compileOptions: CompileOptions): Unit = {
+    when(notChaos && timeSinceReset === n) {
+      cassert(cond, msg)
+    }
+  }
+
   def assertAfterNStepWhen(cond: Bool, n: Int, asert: Bool, msg: String = "")
                      (implicit sourceInfo: SourceInfo,
                       compileOptions: CompileOptions): Unit = {
