@@ -42,6 +42,19 @@ object Check {
        |""".stripMargin
   }
 
+  private def aigGenYs(files: String, top: String, targetFilename: String = "") = {
+    s"""read -sv $files
+       |prep -top $top -nordff
+       |flatten
+       |memory -nomap
+       |setundef -undriven -init -expose
+       |delete -output
+       |techmap
+       |abc -fast -g AND
+       |write_aiger -zinit ${if (targetFilename == "") top else targetFilename}.aig
+       |""".stripMargin
+  }
+
   def bmc[T <: RawModule](dutGen: () => T, depth: Int = 20) = {
     check(dutGen, "bmc", depth)
   }
@@ -54,6 +67,22 @@ object Check {
     check(dutGen, "abcPdr", depth)
   }
 
+  def modelChecker(path: String): ProcessBuilder = {
+    new ProcessBuilder("/Users/yuechen/Documents/caches/MC/PEBMC/modelchecker", path)
+  }
+
+  def checkWith[T <: RawModule](dutGen: () => T, method: String, processBuilder: String => ProcessBuilder, parserGen: (() => T, String, String) => Unit) = {
+    parserGen(dutGen, "_" + method, "")
+    val mod = modName(dutGen)
+    val dirName = mod + "_" + method
+    val dir = new File(dirName)
+
+    val file = s"$mod.aig"
+
+    val checkProcess: Process = processBuilder(file).directory(dir).start()
+
+    processResultHandler(checkProcess, mod + "_" + method, dirName)
+  }
 
   private def check[T <: RawModule](dutGen: () => T, mode: String, depth: Int) = {
     generateRTL(dutGen, "_" + mode)
@@ -86,6 +115,7 @@ object Check {
     }
 
     val sbyProcess = new ProcessBuilder("sby", sbyFileName).directory(dir).start()
+
 
     processResultHandler(sbyProcess, mod + "_" + mode, dirName)
   }
@@ -188,6 +218,25 @@ object Check {
     processResultHandler(yosysProcess, "yosys_parse", targetDir)
 
   }
+
+  def generateAIG[T <: RawModule](dutGen: () => T, targetDirSufix: String = "_aig_build", outputFile: String = "") = {
+    val name = modName(dutGen)
+    val targetDir = name + targetDirSufix
+    generateRTL(dutGen, targetDirSufix, outputFile)
+    val currentPath = Paths.get(System.getProperty("user.dir"))
+    val filePath = Paths.get(currentPath.toString, targetDir, name + ".ys")
+    val files = new File(targetDir).listFiles.filter(_.getName.endsWith(".sv")).map(_.getName).mkString(" ")
+
+    new PrintWriter(filePath.toString) {
+      print(aigGenYs(files, name, name));
+      close()
+    }
+    var dir = new File(targetDir)
+    val yosysProcess = new ProcessBuilder("yosys", filePath.toString).directory(dir).start()
+
+    processResultHandler(yosysProcess, "yosys_parse", targetDir)
+  }
+
 
   def modName[T <: RawModule] (dutGen: () => T): String = {
     val annos = ChiselGeneratorAnnotation(dutGen).elaborate
