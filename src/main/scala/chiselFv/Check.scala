@@ -68,7 +68,11 @@ object Check {
   }
 
   def modelChecker(path: String): ProcessBuilder = {
-    new ProcessBuilder("/Users/yuechen/Documents/caches/MC/PEBMC/modelchecker", path)
+    new ProcessBuilder("modelchecker", path)
+  }
+
+  def hybridCEC(path: String): ProcessBuilder = {
+    new ProcessBuilder("hybrid_cec", path)
   }
 
   def checkWith[T <: RawModule](dutGen: () => T, method: String, processBuilder: String => ProcessBuilder, parserGen: (() => T, String, String) => Unit) = {
