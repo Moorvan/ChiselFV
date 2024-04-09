@@ -1,7 +1,7 @@
-package cases
+package memory_0
 
-import Chisel.log2Ceil
 import chisel3._
+import chisel3.util._
 import chiselFv._
 
 class Memory(c: Int, w: Int) extends Module with Formal {
@@ -39,10 +39,10 @@ class Memory(c: Int, w: Int) extends Module with Formal {
 }
 
 
-//object Memory extends App {
-////  Check.generateRTL(() => new Memory(16, 8))
-//  Check.kInduction(() => new Memory(1024, 8))
-////  Check.generateBtor(() => new Memory(32, 8))
-////  Check.kInduction(() => new Memory(32, 8))
-////  Check.kInduction(() => new Memory(2048, 8))
-//}
+object Memory extends App {
+  //  Check.generateRTL(() => new Memory(16, 8))
+  Check.kInduction(() => new Memory(1024, 8))
+  //  Check.generateBtor(() => new Memory(32, 8))
+  //  Check.kInduction(() => new Memory(32, 8))
+  //  Check.kInduction(() => new Memory(2048, 8))
+}

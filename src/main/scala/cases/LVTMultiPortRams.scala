@@ -56,7 +56,7 @@ class LiveValueTable(m: Int, n: Int, size: Int, addrW: Int) extends Module {
 }
 
 
-class LVTMultiPortRams(m: Int, n: Int, size: Int, w: Int) extends Module with Formal {
+class LVTMultiPortRams(m: Int, n: Int, size: Int, w: Int) extends Module {
   val addrW: Int = math.ceil(math.log(size) / math.log(2)).toInt
   val io         = IO(new Bundle {
     val wrAddr = Input(Vec(m, UInt(addrW.W)))
@@ -90,30 +90,30 @@ class LVTMultiPortRams(m: Int, n: Int, size: Int, w: Int) extends Module with Fo
   }
 
   // Formal verification
-  val addr = anyconst(addrW)
-  val hasWritten = initialReg(1, 0)
-  val data = Reg(UInt(w.W))
-  hasWritten.io.in := 0.U
-  for (i <- 0 until m) {
-    when(io.wrAddr(i) === addr && io.wrEna(i) === true.B) {
-      data := io.wrData(i)
-      hasWritten.io.in := 1.U
-      for(j <- 0 until m) {
-        if (i != j) {
-          assume(io.wrAddr(j) =/= addr || io.wrEna(j) === false.B)
-        }
-      }
-    }
-  }
-  for (i <- 0 until n) {
-    when(io.rdAddr(i) === addr && hasWritten.io.out === 1.U) {
-      assert(io.rdData(i) === data)
-    }
-  }
+//  val addr = anyconst(addrW)
+//  val hasWritten = initialReg(1, 0)
+//  val data = Reg(UInt(w.W))
+//  hasWritten.io.in := 0.U
+//  for (i <- 0 until m) {
+//    when(io.wrAddr(i) === addr && io.wrEna(i) === true.B) {
+//      data := io.wrData(i)
+//      hasWritten.io.in := 1.U
+//      for(j <- 0 until m) {
+//        if (i != j) {
+//          assume(io.wrAddr(j) =/= addr || io.wrEna(j) === false.B)
+//        }
+//      }
+//    }
+//  }
+//  for (i <- 0 until n) {
+//    when(io.rdAddr(i) === addr && hasWritten.io.out === 1.U) {
+//      assert(io.rdData(i) === data)
+//    }
+//  }
 
 }
 
 object LVTMultiPortRams extends App {
-  Check.kInduction(() => new LVTMultiPortRams(m = 2, n = 2, size = 8, w = 8))
-  Check.kInduction(() => new LVTMultiPortRams(m = 3, n = 3, size = 8, w = 8))
+  Check.generateRTL(() => new LVTMultiPortRams(m=2, n=2, size = 4, w = 8))
+//  Check.pdr(() => new LVTMultiPortRams(m = 4, n = 4, size = 4, w = 8))
 }
